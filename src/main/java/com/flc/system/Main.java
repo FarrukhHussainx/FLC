@@ -86,8 +86,7 @@ public class Main {
 
         // =========================
 // REPORTS (AFTER 4 WEEKS)
-// =========================
         system.generateLessonReportFirst4Weeks();
-//        system.generateHighestIncomeReportFirst4Weeks();
+        system.generateHighestIncomeReportFirst4Weeks();
     }
 }

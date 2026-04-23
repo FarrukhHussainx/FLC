@@ -1,7 +1,9 @@
 package com.flc.system;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BookingSystem {
 
@@ -9,12 +11,16 @@ public class BookingSystem {
     private List<Lesson> lessons = new ArrayList<>();
     private List<Booking> bookings = new ArrayList<>();
 
+    // =========================
     // MEMBERS
+    // =========================
     public void addMember(Member member) {
         if (member != null) members.add(member);
     }
 
+    // =========================
     // 8 WEEK TIMETABLE
+    // =========================
     public void generate8WeekSchedule() {
 
         double yogaPrice = 10;
@@ -33,7 +39,9 @@ public class BookingSystem {
         }
     }
 
+    // =========================
     // DISPLAY
+    // =========================
     public void showLessons() {
         for (Lesson lesson : lessons) {
             System.out.println(lesson.getDetails());
@@ -56,7 +64,9 @@ public class BookingSystem {
         }
     }
 
+    // =========================
     // BOOKING
+    // =========================
     public boolean bookLesson(String memberId, String name, String day, TimeSlot slot, int week) {
 
         Member member = findMember(memberId);
@@ -73,7 +83,9 @@ public class BookingSystem {
         return false;
     }
 
+    // =========================
     // CANCEL
+    // =========================
     public void cancelBooking(String memberId, String name, String day, TimeSlot slot, int week) {
 
         Member member = findMember(memberId);
@@ -89,7 +101,9 @@ public class BookingSystem {
         );
     }
 
+    // =========================
     // CHANGE BOOKING
+    // =========================
     public boolean changeBooking(String memberId,
                                  String oldName, String oldDay, TimeSlot oldSlot, int oldWeek,
                                  String newName, String newDay, TimeSlot newSlot, int newWeek) {
@@ -118,7 +132,9 @@ public class BookingSystem {
         return true;
     }
 
-    // REVIEWS ⭐ NEW FEATURE
+    // =========================
+    // REVIEWS
+    // =========================
     public boolean addReview(String memberId,
                              String name,
                              String day,
@@ -131,42 +147,20 @@ public class BookingSystem {
         Lesson lesson = findLesson(name, day, slot, week);
 
         if (member == null || lesson == null) return false;
-
         if (rating < 1 || rating > 5) return false;
-
         if (!lesson.getBookedMembers().contains(member)) return false;
 
         for (Review r : lesson.getReviews()) {
-            if (r.getMember().equals(member)) {
-                System.out.println("Already reviewed!");
-                return false;
-            }
+            if (r.getMember().equals(member)) return false;
         }
 
         lesson.addReview(new Review(member, lesson, rating, comment));
         return true;
     }
 
-    // FINDERS
-    private Member findMember(String id) {
-        for (Member m : members) {
-            if (m.getMemberId().equals(id)) return m;
-        }
-        return null;
-    }
-
-    private Lesson findLesson(String name, String day, TimeSlot slot, int week) {
-        for (Lesson l : lessons) {
-            if (l.getLessonName().equalsIgnoreCase(name)
-                    && l.getDay().equalsIgnoreCase(day)
-                    && l.getTimeSlot() == slot
-                    && l.getWeekNumber() == week) {
-                return l;
-            }
-        }
-        return null;
-    }
-
+    // =========================
+    // REPORT 1
+    // =========================
     public void generateLessonReportFirst4Weeks() {
 
         System.out.println("\n===== LESSON REPORT (WEEKS 1–4) =====");
@@ -188,5 +182,65 @@ public class BookingSystem {
                 );
             }
         }
+    }
+
+    // =========================
+    // REPORT 2
+    // =========================
+    public void generateHighestIncomeReportFirst4Weeks() {
+
+        System.out.println("\n===== INCOME REPORT (WEEKS 1–4) =====");
+
+        Map<String, Double> incomeMap = new HashMap<>();
+
+        for (Lesson lesson : lessons) {
+
+            if (lesson.getWeekNumber() <= 4) {
+
+                String exercise = lesson.getLessonName();
+                double income = lesson.getBookedMembers().size() * lesson.getPrice();
+
+                incomeMap.put(exercise,
+                        incomeMap.getOrDefault(exercise, 0.0) + income);
+            }
+        }
+
+        String topExercise = "";
+        double maxIncome = 0;
+
+        for (Map.Entry<String, Double> entry : incomeMap.entrySet()) {
+
+            System.out.println(entry.getKey() + " | Total Income: £" + entry.getValue());
+
+            if (entry.getValue() > maxIncome) {
+                maxIncome = entry.getValue();
+                topExercise = entry.getKey();
+            }
+        }
+
+        System.out.println("\n🏆 Highest Income Exercise: " +
+                topExercise + " (£" + maxIncome + ")");
+    }
+
+    // =========================
+    // HELPERS
+    // =========================
+    private Member findMember(String id) {
+        for (Member m : members) {
+            if (m.getMemberId().equals(id)) return m;
+        }
+        return null;
+    }
+
+    private Lesson findLesson(String name, String day, TimeSlot slot, int week) {
+        for (Lesson l : lessons) {
+            if (l.getLessonName().equalsIgnoreCase(name)
+                    && l.getDay().equalsIgnoreCase(day)
+                    && l.getTimeSlot() == slot
+                    && l.getWeekNumber() == week) {
+                return l;
+            }
+        }
+        return null;
     }
 }

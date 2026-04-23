@@ -76,6 +76,8 @@ public class Lesson {
                 " | Avg Rating: " + String.format("%.1f", getAverageRating());
     }
 
+
+
     // GETTERS
     public String getLessonName() { return lessonName; }
     public String getDay() { return day; }
