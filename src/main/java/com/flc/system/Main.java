@@ -83,5 +83,11 @@ public class Main {
 
         System.out.println("\n===== FINAL LESSON STATE =====");
         system.showLessons();
+
+        // =========================
+// REPORTS (AFTER 4 WEEKS)
+// =========================
+        system.generateLessonReportFirst4Weeks();
+//        system.generateHighestIncomeReportFirst4Weeks();
     }
 }

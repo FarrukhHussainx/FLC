@@ -166,4 +166,27 @@ public class BookingSystem {
         }
         return null;
     }
+
+    public void generateLessonReportFirst4Weeks() {
+
+        System.out.println("\n===== LESSON REPORT (WEEKS 1–4) =====");
+
+        for (Lesson lesson : lessons) {
+
+            if (lesson.getWeekNumber() <= 4) {
+
+                int memberCount = lesson.getBookedMembers().size();
+                double avgRating = lesson.getAverageRating();
+
+                System.out.println(
+                        "Week " + lesson.getWeekNumber() + " | " +
+                                lesson.getLessonName() + " | " +
+                                lesson.getDay() + " | " +
+                                lesson.getTimeSlot() +
+                                " | Members: " + memberCount +
+                                " | Avg Rating: " + String.format("%.1f", avgRating)
+                );
+            }
+        }
+    }
 }
