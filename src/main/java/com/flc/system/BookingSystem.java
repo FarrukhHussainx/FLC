@@ -14,9 +14,22 @@ public class BookingSystem {
         members.add(member);
     }
 
-    // Add lesson
-    public void addLesson(Lesson lesson) {
-        lessons.add(lesson);
+    // Generate fixed weekend schedule (3 per day)
+    public void generateWeekendSchedule() {
+
+        double yogaPrice = 10;
+        double zumbaPrice = 12;
+        double boxFitPrice = 15;
+
+        // Saturday
+        lessons.add(new Lesson("Yoga", "Saturday", TimeSlot.MORNING, yogaPrice));
+        lessons.add(new Lesson("Zumba", "Saturday", TimeSlot.AFTERNOON, zumbaPrice));
+        lessons.add(new Lesson("Box Fit", "Saturday", TimeSlot.EVENING, boxFitPrice));
+
+        // Sunday
+        lessons.add(new Lesson("Yoga", "Sunday", TimeSlot.MORNING, yogaPrice));
+        lessons.add(new Lesson("Zumba", "Sunday", TimeSlot.AFTERNOON, zumbaPrice));
+        lessons.add(new Lesson("Box Fit", "Sunday", TimeSlot.EVENING, boxFitPrice));
     }
 
     // Show all lessons
@@ -27,25 +40,34 @@ public class BookingSystem {
     }
 
     // Book lesson
-    public boolean bookLesson(String memberId, String lessonName) {
-        Member member = findMember(memberId);
-        Lesson lesson = findLesson(lessonName);
+    public boolean bookLesson(String memberId, String name, String day, TimeSlot slot) {
 
-        if (member != null && lesson != null) {
-            if (lesson.bookMember(member)) {
-                bookings.add(new Booking(member, lesson));
-                return true;
-            } else {
-                System.out.println("Lesson is full!");
-            }
+        Member member = findMember(memberId);
+        Lesson lesson = findLesson(name, day, slot);
+
+        if (member == null) {
+            System.out.println("Member not found!");
+            return false;
         }
-        return false;
+
+        if (lesson == null) {
+            System.out.println("Lesson not found!");
+            return false;
+        }
+
+        if (lesson.bookMember(member)) {
+            bookings.add(new Booking(member, lesson));
+            return true;
+        } else {
+            System.out.println("Lesson full!");
+            return false;
+        }
     }
 
     // Cancel booking
-    public void cancelBooking(String memberId, String lessonName) {
+    public void cancelBooking(String memberId, String name, String day, TimeSlot slot) {
         Member member = findMember(memberId);
-        Lesson lesson = findLesson(lessonName);
+        Lesson lesson = findLesson(name, day, slot);
 
         if (member != null && lesson != null) {
             lesson.cancelBooking(member);
@@ -56,6 +78,7 @@ public class BookingSystem {
         }
     }
 
+    // Find member
     private Member findMember(String memberId) {
         for (Member m : members) {
             if (m.getMemberId().equals(memberId)) {
@@ -65,9 +88,12 @@ public class BookingSystem {
         return null;
     }
 
-    private Lesson findLesson(String lessonName) {
+    // Find lesson (correct version)
+    private Lesson findLesson(String name, String day, TimeSlot slot) {
         for (Lesson l : lessons) {
-            if (l.getLessonName().equalsIgnoreCase(lessonName)) {
+            if (l.getLessonName().equalsIgnoreCase(name)
+                    && l.getDay().equalsIgnoreCase(day)
+                    && l.getTimeSlot() == slot) {
                 return l;
             }
         }
