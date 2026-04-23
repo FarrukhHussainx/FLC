@@ -13,6 +13,7 @@ public class Lesson {
 
     private final int capacity = 4;
     private List<Member> bookedMembers = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     public Lesson(String lessonName, String day, TimeSlot timeSlot, double price, int weekNumber) {
         this.lessonName = lessonName;
@@ -22,6 +23,7 @@ public class Lesson {
         this.weekNumber = weekNumber;
     }
 
+    // BOOKING
     public boolean bookMember(Member member) {
         if (member == null) return false;
 
@@ -46,13 +48,35 @@ public class Lesson {
         return capacity - bookedMembers.size();
     }
 
+    // REVIEWS
+    public void addReview(Review review) {
+        reviews.add(review);
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public double getAverageRating() {
+        if (reviews.isEmpty()) return 0;
+
+        int total = 0;
+        for (Review r : reviews) {
+            total += r.getRating();
+        }
+        return (double) total / reviews.size();
+    }
+
+    // DISPLAY
     public String getDetails() {
         return "Week " + weekNumber + " | " +
                 lessonName + " | " + day + " | " + timeSlot +
                 " | Price: £" + price +
-                " | Slots left: " + getAvailableSlots();
+                " | Slots left: " + getAvailableSlots() +
+                " | Avg Rating: " + String.format("%.1f", getAverageRating());
     }
 
+    // GETTERS
     public String getLessonName() { return lessonName; }
     public String getDay() { return day; }
     public TimeSlot getTimeSlot() { return timeSlot; }

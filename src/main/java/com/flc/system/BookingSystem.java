@@ -9,14 +9,12 @@ public class BookingSystem {
     private List<Lesson> lessons = new ArrayList<>();
     private List<Booking> bookings = new ArrayList<>();
 
-    // Add member
+    // MEMBERS
     public void addMember(Member member) {
-        if (member != null) {
-            members.add(member);
-        }
+        if (member != null) members.add(member);
     }
 
-    // Generate 8-week schedule
+    // 8 WEEK TIMETABLE
     public void generate8WeekSchedule() {
 
         double yogaPrice = 10;
@@ -35,80 +33,53 @@ public class BookingSystem {
         }
     }
 
-    // Show all lessons
+    // DISPLAY
     public void showLessons() {
         for (Lesson lesson : lessons) {
             System.out.println(lesson.getDetails());
         }
     }
 
-    // ✅ NEW: Show lessons by day
     public void showLessonsByDay(String day) {
-        boolean found = false;
-
-        for (Lesson lesson : lessons) {
-            if (lesson.getDay().equalsIgnoreCase(day)) {
-                System.out.println(lesson.getDetails());
-                found = true;
+        for (Lesson l : lessons) {
+            if (l.getDay().equalsIgnoreCase(day)) {
+                System.out.println(l.getDetails());
             }
-        }
-
-        if (!found) {
-            System.out.println("No lessons found for " + day);
         }
     }
 
-    // ✅ NEW: Show lessons by exercise
-    public void showLessonsByExercise(String exerciseName) {
-        boolean found = false;
-
-        for (Lesson lesson : lessons) {
-            if (lesson.getLessonName().equalsIgnoreCase(exerciseName)) {
-                System.out.println(lesson.getDetails());
-                found = true;
+    public void showLessonsByExercise(String exercise) {
+        for (Lesson l : lessons) {
+            if (l.getLessonName().equalsIgnoreCase(exercise)) {
+                System.out.println(l.getDetails());
             }
-        }
-
-        if (!found) {
-            System.out.println("No lessons found for " + exerciseName);
         }
     }
 
-    // Book lesson
+    // BOOKING
     public boolean bookLesson(String memberId, String name, String day, TimeSlot slot, int week) {
 
         Member member = findMember(memberId);
         Lesson lesson = findLesson(name, day, slot, week);
 
-        if (member == null) {
-            System.out.println("Member not found!");
-            return false;
-        }
-
-        if (lesson == null) {
-            System.out.println("Lesson not found!");
-            return false;
-        }
+        if (member == null || lesson == null) return false;
 
         if (lesson.bookMember(member)) {
             bookings.add(new Booking(member, lesson));
             return true;
-        } else {
-            System.out.println("Lesson full!");
-            return false;
         }
+
+        System.out.println("Lesson full!");
+        return false;
     }
 
-    // Cancel booking
+    // CANCEL
     public void cancelBooking(String memberId, String name, String day, TimeSlot slot, int week) {
 
         Member member = findMember(memberId);
         Lesson lesson = findLesson(name, day, slot, week);
 
-        if (member == null || lesson == null) {
-            System.out.println("Invalid cancellation!");
-            return;
-        }
+        if (member == null || lesson == null) return;
 
         lesson.cancelBooking(member);
 
@@ -118,7 +89,7 @@ public class BookingSystem {
         );
     }
 
-    // ✅ NEW: Change booking
+    // CHANGE BOOKING
     public boolean changeBooking(String memberId,
                                  String oldName, String oldDay, TimeSlot oldSlot, int oldWeek,
                                  String newName, String newDay, TimeSlot newSlot, int newWeek) {
@@ -128,22 +99,12 @@ public class BookingSystem {
         Lesson oldLesson = findLesson(oldName, oldDay, oldSlot, oldWeek);
         Lesson newLesson = findLesson(newName, newDay, newSlot, newWeek);
 
-        if (member == null || oldLesson == null || newLesson == null) {
-            System.out.println("Invalid booking details!");
-            return false;
-        }
+        if (member == null || oldLesson == null || newLesson == null) return false;
 
-        if (!oldLesson.getBookedMembers().contains(member)) {
-            System.out.println("Member not booked in old lesson!");
-            return false;
-        }
+        if (!oldLesson.getBookedMembers().contains(member)) return false;
 
-        if (newLesson.getAvailableSlots() <= 0) {
-            System.out.println("New lesson is full!");
-            return false;
-        }
+        if (newLesson.getAvailableSlots() <= 0) return false;
 
-        // Perform change
         oldLesson.cancelBooking(member);
         newLesson.bookMember(member);
 
@@ -154,21 +115,46 @@ public class BookingSystem {
 
         bookings.add(new Booking(member, newLesson));
 
-        System.out.println("Booking changed successfully!");
         return true;
     }
 
-    // Find member
-    private Member findMember(String memberId) {
-        for (Member m : members) {
-            if (m.getMemberId().equals(memberId)) {
-                return m;
+    // REVIEWS ⭐ NEW FEATURE
+    public boolean addReview(String memberId,
+                             String name,
+                             String day,
+                             TimeSlot slot,
+                             int week,
+                             int rating,
+                             String comment) {
+
+        Member member = findMember(memberId);
+        Lesson lesson = findLesson(name, day, slot, week);
+
+        if (member == null || lesson == null) return false;
+
+        if (rating < 1 || rating > 5) return false;
+
+        if (!lesson.getBookedMembers().contains(member)) return false;
+
+        for (Review r : lesson.getReviews()) {
+            if (r.getMember().equals(member)) {
+                System.out.println("Already reviewed!");
+                return false;
             }
+        }
+
+        lesson.addReview(new Review(member, lesson, rating, comment));
+        return true;
+    }
+
+    // FINDERS
+    private Member findMember(String id) {
+        for (Member m : members) {
+            if (m.getMemberId().equals(id)) return m;
         }
         return null;
     }
 
-    // Find lesson
     private Lesson findLesson(String name, String day, TimeSlot slot, int week) {
         for (Lesson l : lessons) {
             if (l.getLessonName().equalsIgnoreCase(name)

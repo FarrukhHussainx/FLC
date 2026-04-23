@@ -5,40 +5,83 @@ public class Main {
 
         BookingSystem system = new BookingSystem();
 
+        // =========================
+        // ADD MEMBERS
+        // =========================
         system.addMember(new Member("M1", "Ali"));
         system.addMember(new Member("M2", "Sara"));
+        system.addMember(new Member("M3", "John"));
+        system.addMember(new Member("M4", "Emma"));
 
+        // =========================
+        // GENERATE TIMETABLE
+        // =========================
         system.generate8WeekSchedule();
 
-        // 🔍 Check timetable by day
-        System.out.println("SATURDAY LESSONS:");
+        // =========================
+        // VIEW TIMETABLE
+        // =========================
+        System.out.println("===== SATURDAY LESSONS =====");
         system.showLessonsByDay("Saturday");
 
-        // 🔍 Check timetable by exercise
-        System.out.println("\nYOGA LESSONS:");
+        System.out.println("\n===== YOGA LESSONS =====");
         system.showLessonsByExercise("Yoga");
 
-        // Book lesson
+        // =========================
+        // BOOK LESSONS
+        // =========================
+        System.out.println("\n===== BOOKING =====");
+
+        system.bookLesson("M1", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M2", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M3", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M4", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+
+        // This one should fail (capacity = 4)
         system.bookLesson("M1", "Yoga", "Saturday", TimeSlot.MORNING, 1);
 
-        // Change booking
+        System.out.println("\n===== AFTER BOOKING =====");
+        system.showLessons();
+
+        // =========================
+        // CHANGE BOOKING
+        // =========================
+        System.out.println("\n===== CHANGE BOOKING =====");
+
         system.changeBooking(
                 "M1",
                 "Yoga", "Saturday", TimeSlot.MORNING, 1,
                 "Zumba", "Sunday", TimeSlot.AFTERNOON, 1
         );
 
-        System.out.println("\nFINAL LESSONS:");
+        System.out.println("\n===== AFTER CHANGE =====");
         system.showLessons();
 
-        // Cancel booking
-        System.out.println("\nCANCELLING BOOKING...");
+        // =========================
+        // CANCEL BOOKING
+        // =========================
+        System.out.println("\n===== CANCEL BOOKING =====");
+
         system.cancelBooking(
-                "M1",
-                "Zumba", "Sunday", TimeSlot.AFTERNOON, 1
+                "M2",
+                "Yoga", "Saturday", TimeSlot.MORNING, 1
         );
 
-        System.out.println("\nAFTER CANCELLATION:");
+        System.out.println("\n===== AFTER CANCELLATION =====");
+        system.showLessons();
+
+        // =========================
+        // ADD REVIEWS
+        // =========================
+        System.out.println("\n===== REVIEWS =====");
+
+        system.addReview("M3", "Yoga", "Saturday", TimeSlot.MORNING, 1, 5, "Excellent session!");
+        system.addReview("M4", "Yoga", "Saturday", TimeSlot.MORNING, 1, 4, "Very good workout!");
+
+        // This should fail (not booked or wrong lesson after change)
+        system.addReview("M1", "Yoga", "Saturday", TimeSlot.MORNING, 1, 3, "Nice");
+
+        System.out.println("\n===== FINAL LESSON STATE =====");
         system.showLessons();
     }
 }
