@@ -6,22 +6,25 @@ import java.util.List;
 public class Lesson {
 
     private String lessonName;
-    private String day; // Saturday / Sunday
+    private String day;
     private TimeSlot timeSlot;
     private double price;
+    private int weekNumber;
 
     private final int capacity = 4;
     private List<Member> bookedMembers = new ArrayList<>();
 
-    public Lesson(String lessonName, String day, TimeSlot timeSlot, double price) {
+    public Lesson(String lessonName, String day, TimeSlot timeSlot, double price, int weekNumber) {
         this.lessonName = lessonName;
         this.day = day;
         this.timeSlot = timeSlot;
         this.price = price;
+        this.weekNumber = weekNumber;
     }
 
     public boolean bookMember(Member member) {
-        // prevent duplicate booking
+        if (member == null) return false;
+
         if (bookedMembers.contains(member)) {
             System.out.println("Member already booked!");
             return false;
@@ -31,6 +34,7 @@ public class Lesson {
             bookedMembers.add(member);
             return true;
         }
+
         return false;
     }
 
@@ -43,7 +47,8 @@ public class Lesson {
     }
 
     public String getDetails() {
-        return lessonName + " | " + day + " | " + timeSlot +
+        return "Week " + weekNumber + " | " +
+                lessonName + " | " + day + " | " + timeSlot +
                 " | Price: £" + price +
                 " | Slots left: " + getAvailableSlots();
     }
@@ -52,5 +57,6 @@ public class Lesson {
     public String getDay() { return day; }
     public TimeSlot getTimeSlot() { return timeSlot; }
     public double getPrice() { return price; }
+    public int getWeekNumber() { return weekNumber; }
     public List<Member> getBookedMembers() { return bookedMembers; }
 }

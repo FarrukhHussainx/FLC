@@ -11,28 +11,33 @@ public class BookingSystem {
 
     // Add member
     public void addMember(Member member) {
-        members.add(member);
+        if (member != null) {
+            members.add(member);
+        }
     }
 
-    // Generate fixed weekend schedule (3 per day)
-    public void generateWeekendSchedule() {
+    // Generate 8-week schedule
+    public void generate8WeekSchedule() {
 
         double yogaPrice = 10;
         double zumbaPrice = 12;
         double boxFitPrice = 15;
 
-        // Saturday
-        lessons.add(new Lesson("Yoga", "Saturday", TimeSlot.MORNING, yogaPrice));
-        lessons.add(new Lesson("Zumba", "Saturday", TimeSlot.AFTERNOON, zumbaPrice));
-        lessons.add(new Lesson("Box Fit", "Saturday", TimeSlot.EVENING, boxFitPrice));
+        for (int week = 1; week <= 8; week++) {
 
-        // Sunday
-        lessons.add(new Lesson("Yoga", "Sunday", TimeSlot.MORNING, yogaPrice));
-        lessons.add(new Lesson("Zumba", "Sunday", TimeSlot.AFTERNOON, zumbaPrice));
-        lessons.add(new Lesson("Box Fit", "Sunday", TimeSlot.EVENING, boxFitPrice));
+            // Saturday
+            lessons.add(new Lesson("Yoga", "Saturday", TimeSlot.MORNING, yogaPrice, week));
+            lessons.add(new Lesson("Zumba", "Saturday", TimeSlot.AFTERNOON, zumbaPrice, week));
+            lessons.add(new Lesson("Box Fit", "Saturday", TimeSlot.EVENING, boxFitPrice, week));
+
+            // Sunday
+            lessons.add(new Lesson("Yoga", "Sunday", TimeSlot.MORNING, yogaPrice, week));
+            lessons.add(new Lesson("Zumba", "Sunday", TimeSlot.AFTERNOON, zumbaPrice, week));
+            lessons.add(new Lesson("Box Fit", "Sunday", TimeSlot.EVENING, boxFitPrice, week));
+        }
     }
 
-    // Show all lessons
+    // Show lessons
     public void showLessons() {
         for (Lesson lesson : lessons) {
             System.out.println(lesson.getDetails());
@@ -40,10 +45,10 @@ public class BookingSystem {
     }
 
     // Book lesson
-    public boolean bookLesson(String memberId, String name, String day, TimeSlot slot) {
+    public boolean bookLesson(String memberId, String name, String day, TimeSlot slot, int week) {
 
         Member member = findMember(memberId);
-        Lesson lesson = findLesson(name, day, slot);
+        Lesson lesson = findLesson(name, day, slot, week);
 
         if (member == null) {
             System.out.println("Member not found!");
@@ -65,17 +70,22 @@ public class BookingSystem {
     }
 
     // Cancel booking
-    public void cancelBooking(String memberId, String name, String day, TimeSlot slot) {
-        Member member = findMember(memberId);
-        Lesson lesson = findLesson(name, day, slot);
+    public void cancelBooking(String memberId, String name, String day, TimeSlot slot, int week) {
 
-        if (member != null && lesson != null) {
-            lesson.cancelBooking(member);
-            bookings.removeIf(b ->
-                    b.getMember().equals(member) &&
-                            b.getLesson().equals(lesson)
-            );
+        Member member = findMember(memberId);
+        Lesson lesson = findLesson(name, day, slot, week);
+
+        if (member == null || lesson == null) {
+            System.out.println("Invalid cancellation!");
+            return;
         }
+
+        lesson.cancelBooking(member);
+
+        bookings.removeIf(b ->
+                b.getMember().equals(member) &&
+                        b.getLesson().equals(lesson)
+        );
     }
 
     // Find member
@@ -88,12 +98,13 @@ public class BookingSystem {
         return null;
     }
 
-    // Find lesson (correct version)
-    private Lesson findLesson(String name, String day, TimeSlot slot) {
+    // Find lesson
+    private Lesson findLesson(String name, String day, TimeSlot slot, int week) {
         for (Lesson l : lessons) {
             if (l.getLessonName().equalsIgnoreCase(name)
                     && l.getDay().equalsIgnoreCase(day)
-                    && l.getTimeSlot() == slot) {
+                    && l.getTimeSlot() == slot
+                    && l.getWeekNumber() == week) {
                 return l;
             }
         }

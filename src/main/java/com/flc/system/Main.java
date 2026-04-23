@@ -12,26 +12,28 @@ public class Main {
         system.addMember(new Member("M4", "Emma"));
         system.addMember(new Member("M5", "David"));
 
-        // Generate lessons
-        system.generateWeekendSchedule();
+        // Generate timetable
+        system.generate8WeekSchedule();
 
-        System.out.println("Initial Lessons:");
+        System.out.println("INITIAL LESSONS:");
         system.showLessons();
 
-        // Bookings
-        system.bookLesson("M1", "Yoga", "Saturday", TimeSlot.MORNING);
-        system.bookLesson("M2", "Yoga", "Saturday", TimeSlot.MORNING);
-        system.bookLesson("M3", "Yoga", "Saturday", TimeSlot.MORNING);
-        system.bookLesson("M4", "Yoga", "Saturday", TimeSlot.MORNING);
-        system.bookLesson("M5", "Yoga", "Saturday", TimeSlot.MORNING); // should fail
+        // Book lessons
+        System.out.println("\nBOOKING...");
+        system.bookLesson("M1", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M2", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M3", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M4", "Yoga", "Saturday", TimeSlot.MORNING, 1);
+        system.bookLesson("M5", "Yoga", "Saturday", TimeSlot.MORNING, 1); // should fail
 
-        System.out.println("\nAfter Bookings:");
+        System.out.println("\nAFTER BOOKING:");
         system.showLessons();
 
         // Cancel booking
-        system.cancelBooking("M2", "Yoga", "Saturday", TimeSlot.MORNING);
+        System.out.println("\nCANCELLING...");
+        system.cancelBooking("M2", "Yoga", "Saturday", TimeSlot.MORNING, 1);
 
-        System.out.println("\nAfter Cancellation:");
+        System.out.println("\nAFTER CANCELLATION:");
         system.showLessons();
     }
 }
