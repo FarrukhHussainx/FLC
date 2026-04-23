@@ -25,22 +25,52 @@ public class BookingSystem {
 
         for (int week = 1; week <= 8; week++) {
 
-            // Saturday
             lessons.add(new Lesson("Yoga", "Saturday", TimeSlot.MORNING, yogaPrice, week));
             lessons.add(new Lesson("Zumba", "Saturday", TimeSlot.AFTERNOON, zumbaPrice, week));
             lessons.add(new Lesson("Box Fit", "Saturday", TimeSlot.EVENING, boxFitPrice, week));
 
-            // Sunday
             lessons.add(new Lesson("Yoga", "Sunday", TimeSlot.MORNING, yogaPrice, week));
             lessons.add(new Lesson("Zumba", "Sunday", TimeSlot.AFTERNOON, zumbaPrice, week));
             lessons.add(new Lesson("Box Fit", "Sunday", TimeSlot.EVENING, boxFitPrice, week));
         }
     }
 
-    // Show lessons
+    // Show all lessons
     public void showLessons() {
         for (Lesson lesson : lessons) {
             System.out.println(lesson.getDetails());
+        }
+    }
+
+    // ✅ NEW: Show lessons by day
+    public void showLessonsByDay(String day) {
+        boolean found = false;
+
+        for (Lesson lesson : lessons) {
+            if (lesson.getDay().equalsIgnoreCase(day)) {
+                System.out.println(lesson.getDetails());
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No lessons found for " + day);
+        }
+    }
+
+    // ✅ NEW: Show lessons by exercise
+    public void showLessonsByExercise(String exerciseName) {
+        boolean found = false;
+
+        for (Lesson lesson : lessons) {
+            if (lesson.getLessonName().equalsIgnoreCase(exerciseName)) {
+                System.out.println(lesson.getDetails());
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No lessons found for " + exerciseName);
         }
     }
 
@@ -86,6 +116,46 @@ public class BookingSystem {
                 b.getMember().equals(member) &&
                         b.getLesson().equals(lesson)
         );
+    }
+
+    // ✅ NEW: Change booking
+    public boolean changeBooking(String memberId,
+                                 String oldName, String oldDay, TimeSlot oldSlot, int oldWeek,
+                                 String newName, String newDay, TimeSlot newSlot, int newWeek) {
+
+        Member member = findMember(memberId);
+
+        Lesson oldLesson = findLesson(oldName, oldDay, oldSlot, oldWeek);
+        Lesson newLesson = findLesson(newName, newDay, newSlot, newWeek);
+
+        if (member == null || oldLesson == null || newLesson == null) {
+            System.out.println("Invalid booking details!");
+            return false;
+        }
+
+        if (!oldLesson.getBookedMembers().contains(member)) {
+            System.out.println("Member not booked in old lesson!");
+            return false;
+        }
+
+        if (newLesson.getAvailableSlots() <= 0) {
+            System.out.println("New lesson is full!");
+            return false;
+        }
+
+        // Perform change
+        oldLesson.cancelBooking(member);
+        newLesson.bookMember(member);
+
+        bookings.removeIf(b ->
+                b.getMember().equals(member) &&
+                        b.getLesson().equals(oldLesson)
+        );
+
+        bookings.add(new Booking(member, newLesson));
+
+        System.out.println("Booking changed successfully!");
+        return true;
     }
 
     // Find member
